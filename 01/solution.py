@@ -16,10 +16,15 @@ def count_windowed_increase(arr, window=3):
     return(count_increase(sum_arr))
 
 
+def count_convoluted_increase(arr, window=3):
+    sum_arr = np.convolve(arr, np.ones(window, dtype=int), 'valid')
+    return count_increase(sum_arr)
+
+
 def read_as_int_array(f_name):
     with open(f_name, 'r') as f:
         out = [int(i) for i in f.readlines()]
-    out_arr = np.array(out)
+    out_arr = np.array(out, dtype=int)
     return out_arr
 
 
@@ -27,6 +32,7 @@ def main(f_name):
     arr = read_as_int_array(f_name)
     print(f"increased: {count_increase(arr)}")
     print(f"windowed increase: {count_windowed_increase(arr)}")
+    print(f"convolved increase: {count_convoluted_increase(arr)}")
 
 
 if __name__ == "__main__":
