@@ -54,10 +54,7 @@ def get_most_common_bit(arr, pos=0):
 
 
 def convert_str_bin_to_int(bin_str):
-    ans = 0
-    for i, e in enumerate(bin_str[::-1]):
-        if int(e):
-            ans += 2**i
+    ans = sum([2**i for i, e in enumerate(bin_str[::-1]) if int(e)])
     return ans
 
 
