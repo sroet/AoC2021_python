@@ -11,10 +11,7 @@ def read_file(f_name):
 
 
 def find_low(arr):
-    x, y = arr.shape
-    buffered = np.ones((x+2, y+2))
-    buffered *= np.inf
-    buffered[1:-1, 1:-1] = arr
+    buffered = np.pad(arr, 1, constant_values=10)
     neighbors = (np.roll(buffered, 1, 0), np.roll(buffered, -1, 0),
                  np.roll(buffered, 1, 1), np.roll(buffered, -1, 1))
     a = set(coord_to_tuples(np.where(arr >= 0)))
@@ -33,10 +30,7 @@ def count_part_one(arr, a):
 
 def find_basins(arr, a):
     out = []
-    x, y = arr.shape
-    buffered = np.ones((x+2, y+2))
-    buffered *= np.inf
-    buffered[1:-1, 1:-1] = arr
+    buffered = np.pad(arr, 1, constant_values=10)
     for x, y in a:
         out.append(find_basin_size(buffered, x+1, y+1))
     out.sort()
