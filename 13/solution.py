@@ -43,7 +43,7 @@ def print_code(coord_set):
     max_y = max(i[1] for i in coord_set)
     out = ""
     for line in range(0, max_y+1):
-        out += "".join(["#" if (i, line) in coord_set else "."
+        out += "".join(["#" if (i, line) in coord_set else " "
                         for i in range(max_x+1)])
         out += "\n"
     print(out)
