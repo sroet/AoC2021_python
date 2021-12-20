@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+import time
 
 
 def read_file(f_name):
@@ -24,27 +25,20 @@ def make_distance(matrix):
     for scanner in matrix:
         temp = [sum((i-j)**2 for i, j in zip(b1, b2))
                 for b1 in scanner for b2 in scanner]
-        temp = np.array(temp)
-        out.append(temp.reshape((len(scanner), len(scanner))))
+        temp = np.array(temp).reshape(len(scanner), len(scanner))
+
+        out.append([set(i) for i in temp])
     return out
 
 
 def count_overlaps(matrix, n=3):
-    out = {}
-    for i, scanner1 in enumerate(matrix):
-        for j, scanner2 in enumerate(matrix):
-            c = 0
-            temp = []
-            if i >= j:
-                continue
-            for k, b1 in enumerate(scanner1):
-                for l, b2 in enumerate(scanner2):
-                    if len(set(b1) & set(b2)) >= n:
-                        c += 1
-                        temp.append((k, l))
-            if len(temp) != 0:
-                out[(i, j)] = temp
-
+    out = {(i, j+i+1): temp
+           for i, scanner1 in enumerate(matrix[:-1])
+           for j, scanner2 in enumerate(matrix[i+1:])
+           if (temp := [(k, l)
+                        for k, b1 in enumerate(scanner1)
+                        for l, b2 in enumerate(scanner2)
+                        if len(b1 & b2) >= n])}
     return out
 
 
@@ -55,7 +49,6 @@ def allign_beacons(matrix, overlaps):
     alligned = set([0])
     while len(to_allign) != 0:
         for (i, j), values in overlaps.items():
-            print(f"alligning {i} and {j}")
             if i in alligned and j in alligned:
                 continue  # already aligned
             if i in to_allign and j in to_allign:
@@ -124,9 +117,10 @@ def count_beacons(alligned):
 
 def find_biggest_distance(alligned):
     biggest = 0
-    for i in alligned.values():
-        for j in alligned.values():
-            temp = sum(np.abs(j[-1]-i[-1]))
+    values = list(alligned.values())
+    for i, e in enumerate(values):
+        for j in values[i:]:
+            temp = sum(np.abs(j[-1]-e[-1]))
             if temp > biggest:
                 biggest = temp
     print(biggest)
@@ -141,18 +135,22 @@ def add_origins(inp):
 
 
 def main(f_name, n=12):
+    s = time.time()
     out = read_file(f_name)
+    print(f"time reading file: {time.time()-s}")
+    s2 = time.time()
     dist = make_distance(out)
+    print(f"time making representation: {time.time()-s2}")
+    s2 = time.time()
     overlaps = count_overlaps(dist, int(n))
-
-    alligned = allign_beacons(out, overlaps)
-    print(count_beacons(alligned))
-
-    # Add 0,0 points for part 2 and repeat alignement
+    print(f"time counting overlaps: {time.time()-s2}")
+    s2 = time.time()
     out = add_origins(out)
-
     alligned = allign_beacons(out, overlaps)
+    print(f"time alligning beacon maps: {time.time()-s2}")
+    print(count_beacons(alligned)-len(alligned))
     find_biggest_distance(alligned)
+    print(f"total time: {time.time()-s}")
 
 
 if __name__ == "__main__":
