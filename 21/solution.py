@@ -76,10 +76,10 @@ def main(f_name):
     print(f"time for file_reading: {time.time()-s}")
     s1 = time.time()
     play_deterministic_game(out)
-    print(f" deterministic time: {time.time()-s1}")
+    print(f"deterministic time: {time.time()-s1}")
     s1 = time.time()
     play_dirac_game(out)
-    print(f" dirac_time: {time.time()-s1}")
+    print(f"dirac_time: {time.time()-s1}")
     print(f"total time: {time.time()-s}")
 
 
